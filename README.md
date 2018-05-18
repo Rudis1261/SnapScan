@@ -13,7 +13,7 @@ cd SnapScan
 docker run -it --rm --name PHP-SnapScan \
 -v "$PWD":/usr/src/myapp \
 -w /usr/src/myapp \
-php:5.6-cli php index.php
+php:7.2-fpm php index.php
 ```
 
 Hopefully you have Docker installed already, otherwise this will not work.
@@ -84,3 +84,38 @@ if (!empty($checkPayment)) {
 } else {
     echo "PAYMENT NOT FOUND!" . PHP_EOL;
 }
+```
+
+## Get a list of your payments:
+
+```php
+<?php
+// Include the required files
+require_once('class.qrcode.php');
+require_once('class.snapscan.php'
+
+// Initialize the class and set your API Token
+SnapScan::Init(<your-merchant-id>);
+SnapScan::setApiToken(<your-merchant-api-key>);
+
+// This will default to the last 3 years worth of payments to date
+$payments = SnapScan::payments();
+
+// You can also override the default date range by passing in the following options, as parameters:
+// For example the last 2 weeks up until yesterday's payments
+$payments = SnapScan::payments([
+    'startDate' => date('c', strtotime('-2 weeks')),
+    'endDate' => date('c', strtotime('-1 day'))
+]);
+
+/** These match the options as available on the API:
+startDate	Payments that were started at or after this time, eg: 2000-01-01T01:00:00Z
+endDate	Payments that were started before this time, eg: 2000-01-01T01:00:00Z
+status	A comma separated string of the following values: completed, error or pending, eg. completed,pending
+snapCode	Payments with the SnapCode.
+snapCodeReference	Payments with the SnapCode reference.
+userReference	Payments with the user reference.
+merchantReference	Payments with your reference.
+statementReference	Payments included in the settlement with the provided reference.
+*/
+```
