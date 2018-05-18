@@ -111,6 +111,23 @@ class SnapScan
         return false;
     }
 
+    static function payments($options=[])
+    {
+        if (empty(self::$instance->apiToken)) {
+            throw new Exception("class.SnapScan.php |
+                checkPayment($reference) requires that you had used setApiToken($token) to set your API token", 1
+            );
+        }
+
+        $options['startDate'] = (!empty($options['startDate'])) ? $options['startDate'] : date('c', strtotime('-3 years'));
+        $options['endDate'] = (!empty($options['endDate'])) ? $options['endDate'] : date('c');
+        $getPayments = self::$instance->request('GET', "payments", $options);
+        if (!empty($getPayments)) {
+            return $getPayments;
+        }
+        return [];
+    }
+
     static function request($method="GET", $action="payments", $params=[])
     {
         $method = strtolower($method);
